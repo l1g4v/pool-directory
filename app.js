@@ -5,6 +5,7 @@ var url = "mongodb://localhost:27017/";
 var validated = require('./validated.json');
 var request = require("request-promise");
 var fs = require('fs');
+var br= require("./bridge");
 
 /*MongoClient.connect(url, function (err, db) {
     if (err) throw err;
@@ -118,40 +119,11 @@ var server = http.createServer(function (req, res) {
     var get = urlg.parse(req.url, true).query;
 
     if (get.raw) {
-        var conn = MongoClient.connect(url);
-        conn.then(function (db) {
-            db.db('pooldb').collection('pools').find({}).toArray().then(function (result) {
-                if (result.length > 0) {
-                    for (var n = 0; n < result.length; n++) {
-                        rl = result.length;
-                        var name = result[n].name;
-                        var stratums = result[n].stratums;
-                        var fee = result[n].fee;
-
-                        request({
-                            url: result[n].apiurl,
-                            json: true
-                        }).then((bod) => {
-                            var j = bod;
-                            var pol = { name: `${data.name}<br>${data.url}`, stratums: data.stratums, fee: data.fee, workers: j.pools.ponycoin.workerCount, hashrate: j.pools.ponycoin.hashrateString }
-                            //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
-
-                            //console.log(tbod);
-
-                        }).catch((err) => {
-
-                        });
-                    }
-                } else {
-                    tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
-                }
-            });
-        }).catch(function (err) { console.log(err) });
-        return;
+        res.end(br.getPools());
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    var tbod = "<tbody>";
+    var tbod = br.getBody();
     var tbody = "<span></span>";
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
@@ -167,47 +139,9 @@ var server = http.createServer(function (req, res) {
           <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i> Verified pools<br>
           <input type="text" id="sinput" onkeyup="filterr()" placeholder="Search by name..." title="type"><br>
           <table class="table" id="table"> <thead> <tr> <th>Name</th> <th>Stratum urls</th> <th>Hashrate</th> <th>Workers</th> <th>Fee</th> </tr> </thead>`;
-    var conn = MongoClient.connect(url);
-    conn.then(function (db) {
-        db.db('pooldb').collection('pools').find({}).toArray().then(function (result) {
-            if (result.length > 0) {
-                for (var n = 0; n < result.length; n++) {
-                    rl = result.length;
-                    var name = result[n].name;
-                    var stratums = result[n].stratums;
-                    var fee = result[n].fee;
-                    request({
-                        url: result[n].apiurl,
-                        json: true
-                    }).then(function (bod) {
-                        var j = bod;
-                        tbod += '<tr>';
-                        if (onArray(validated.pools, String(name).split("<br>")[0])) {
-                            tbod += `<td>${name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
-                        } else {
-                            tbod += `<td>${name}</td>`;
-                        }
+    
 
-                        tbod += '<td>';
-                        for (var s = 0; s < stratums.length; s++) {
-                            tbod += `<code>${stratums[s]}</code><br>`;
-                            //console.log(stratums[s]);
-                        }
-                        tbod += '</td>';
-                        tbod += `<td>${j.pools.ponycoin.hashrateString}</td>
-                                <td>${j.pools.ponycoin.workerCount}</td>
-                                <td>${fee}</td>
-                                </tr>`;
-                        tbody += tbod;
-                        //console.log(tbody);
-                        //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
-
-                    }).catch(function (err) {
-
-                    });
-                }
-                //console.log(tbody);
-                resulth += `${tbod}</tbody></table></div></body>
+    resulth += `${tbod}</tbody></table></div></body>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
@@ -222,12 +156,8 @@ var server = http.createServer(function (req, res) {
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         </html>
         `;
-                console.log(tbod);
-                res.end(resulth);
-
-            }
-        });
-    }).catch(function (err) { console.log(err) });
+    console.log(tbod);
+    res.end(resulth);
 
     //conn = null;
 
