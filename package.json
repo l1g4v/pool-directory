@@ -1,0 +1,19 @@
+{
+  "name": "pool-directory",
+  "version": "0.15.0",
+  "description": "Simple mining pool directory",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "mongodb": "^3.1.0-beta4",
+    "request-promise": "^4.2.2",
+    "stratum-client": "^1.0.1"
+  },
+  "license": "MIT"
+}
