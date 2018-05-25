@@ -22,26 +22,26 @@ function onArray(array, value) {
     } return false;
 }
 
-function addPool(dat){
+function addPool(dat) {
     var con = MongoClient.connect(url);
-    var database=null;
-    var res=false;
-    con.then((db)=>{
+    var database = null;
+    var res = false;
+    con.then((db) => {
         database = db;
-        return db.collection('pools');    
+        return db.collection('pools');
     })
-    .then((pools)=>{
-        return pools.insertOne(dat);
-    })
-    .then((result)=>{
-        console.log(result);
-        database.close();
-        return true;
-    })
-    .catch((err)=>{
-        console.error(err)
-        return false;
-    });
+        .then((pools) => {
+            return pools.insertOne(dat);
+        })
+        .then((result) => {
+            console.log(result);
+            database.close();
+            return true;
+        })
+        .catch((err) => {
+            console.error(err)
+            return false;
+        });
     return res;
 }
 /**
@@ -117,42 +117,42 @@ var server = http.createServer(function (req, res) {
 
     var get = urlg.parse(req.url, true).query;
 
-    if(get.raw){
+    if (get.raw) {
         var conn = MongoClient.connect(url);
-    conn.then(function (db) {
-        db.db('pooldb').collection('pools').find({}).toArray().then(function (result) {
-            if (result.length > 0) {
-                for (var n = 0; n < result.length; n++) {
-                    rl = result.length;
-                    var name = result[n].name;
-                    var stratums = result[n].stratums;
-                    var fee = result[n].fee;
-                    
-                    request({
-                        url: result[n].apiurl,
-                        json: true
-                    }).then((bod) => {
-                        var j = bod;
-                        var pol={name:`${data.name}<br>${data.url}`,stratums:data.stratums,fee:data.fee, workers: j.pools.ponycoin.workerCount, hashrate:j.pools.ponycoin.hashrateString}
-                        //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
+        conn.then(function (db) {
+            db.db('pooldb').collection('pools').find({}).toArray().then(function (result) {
+                if (result.length > 0) {
+                    for (var n = 0; n < result.length; n++) {
+                        rl = result.length;
+                        var name = result[n].name;
+                        var stratums = result[n].stratums;
+                        var fee = result[n].fee;
 
-                        //console.log(tbod);
+                        request({
+                            url: result[n].apiurl,
+                            json: true
+                        }).then((bod) => {
+                            var j = bod;
+                            var pol = { name: `${data.name}<br>${data.url}`, stratums: data.stratums, fee: data.fee, workers: j.pools.ponycoin.workerCount, hashrate: j.pools.ponycoin.hashrateString }
+                            //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
-                    }).catch((err) => {
+                            //console.log(tbod);
 
-                    });
+                        }).catch((err) => {
+
+                        });
+                    }
+                } else {
+                    tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
                 }
-            } else {
-                tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
-            }
-        });
-    }).catch(function (err) { console.log(err) });
-    return;
+            });
+        }).catch(function (err) { console.log(err) });
+        return;
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
-    var tbody=null;
+    var tbody = null;
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -198,22 +198,15 @@ var server = http.createServer(function (req, res) {
                                 <td>${j.pools.ponycoin.workerCount}</td>
                                 <td>${fee}</td>
                                 </tr>`;
-                        tbody=tbod;
+                        tbody = tbod;
                         //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
-                        console.log(tbod);
+
                     }).catch((err) => {
 
                     });
                 }
-            } else {
-                tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
-            }
-        });
-    }).catch(function (err) { console.log(err) });
-
-    //conn = null;
-    tbod=`${tbody}</tbody>`;
-    resulth += `${tbod}</table></div></body>
+                console.log(tbod);
+                resulth += `${tbod}</table></div></body>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
@@ -228,11 +221,21 @@ var server = http.createServer(function (req, res) {
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         </html>
         `;
-    console.log(tbod);
+        res.write(resulth);
+
+            } else {
+                tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
+            }
+        });
+    }).catch(function (err) { console.log(err) });
+
+    //conn = null;
+
+    //console.log(tbod);
     //
     //resulth = resulth.replace(/<\/?(tbody)>/g, `${tbod}</tbody>`);
     //
-    res.end(resulth);
+    res.end();
     //res.end();
 
 
