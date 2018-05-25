@@ -152,7 +152,7 @@ var server = http.createServer(function (req, res) {
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
-    var tbody = null;
+    var tbody = "-";
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -198,15 +198,16 @@ var server = http.createServer(function (req, res) {
                                 <td>${j.pools.ponycoin.workerCount}</td>
                                 <td>${fee}</td>
                                 </tr>`;
-                        tbody = tbod;
+                        tbody += tbod;
+                        console.log(tbody);
                         //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
                     }).catch((err) => {
 
                     });
                 }
-                console.log(tbod);
-                resulth += `${tbod}</table></div></body>
+                console.log(tbody);
+                resulth += `${tbod}</tbody></table></div></body>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
@@ -223,8 +224,6 @@ var server = http.createServer(function (req, res) {
         `;
         res.end(resulth);
 
-            } else {
-                tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
             }
         });
     }).catch(function (err) { console.log(err) });
