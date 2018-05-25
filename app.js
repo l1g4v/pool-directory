@@ -55,7 +55,7 @@ var server = http.createServer(function (req, res) {
     if (req.method === 'GET' && req.url === '/favicon.ico') {
         res.writeHead(200, { 'Content-Type': 'image/png' });
         var fileStream = fs.createReadStream("./favicon.ico");
-        return fileStream.pipe(response);
+        return fileStream.pipe(res);
     }
     /*if (req.method === 'POST') {
         if (req.url === "/inbound") {
