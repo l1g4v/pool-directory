@@ -54,8 +54,8 @@ function addPool(dat){
 var server = http.createServer(function (req, res) {
     if (req.method === 'GET' && req.url === '/favicon.ico') {
         res.writeHead(200, { 'Content-Type': 'image/png' });
-        fs.createReadStream('favicon.png').pipe(res);
-        res.end();
+        
+        res.end(fs.readSync('favicon.png'));
 
         return;
     }
@@ -119,6 +119,39 @@ var server = http.createServer(function (req, res) {
 
     var get = urlg.parse(req.url, true).query;
 
+    if(get.raw){
+        var conn = MongoClient.connect(url);
+    conn.then(function (db) {
+        db.db('pooldb').collection('pools').find({}).toArray().then(function (result) {
+            if (result.length > 0) {
+                for (var n = 0; n < result.length; n++) {
+                    rl = result.length;
+                    var name = result[n].name;
+                    var stratums = result[n].stratums;
+                    var fee = result[n].fee;
+                    
+                    request({
+                        url: result[n].apiurl,
+                        json: true
+                    }).then((bod) => {
+                        var j = bod;
+                        var pol={name:`${data.name}<br>${data.url}`,stratums:data.stratums,fee:data.fee, workers: j.pools.ponycoin.workerCount, hashrate:j.pools.ponycoin.hashrateString}
+                        //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
+
+                        //console.log(tbod);
+
+                    }).catch((err) => {
+
+                    });
+                }
+            } else {
+                tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
+            }
+        });
+    }).catch(function (err) { console.log(err) });
+    return;
+    }
+
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
     var resulth = `<!DOCTYPE html>
@@ -168,7 +201,7 @@ var server = http.createServer(function (req, res) {
                                 </tr>`;
                         //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
-                        //console.log(tbod);
+                        console.log(tbod);
 
                     }).catch((err) => {
 
@@ -179,7 +212,6 @@ var server = http.createServer(function (req, res) {
             }
         });
     }).catch(function (err) { console.log(err) });
-
 
     conn = null;
 
