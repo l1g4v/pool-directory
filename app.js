@@ -6,15 +6,6 @@ var validated = require('./validated.json');
 var request = require("request-promise");
 var fs = require('fs');
 
-
-
-
-
-
-var tbod = "<tbody>";
-var resulth = "=";
-
-
 /*MongoClient.connect(url, function (err, db) {
     if (err) throw err;
     var dbo = db.db("pooldb");
@@ -160,10 +151,9 @@ var server = http.createServer(function (req, res) {
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
-
+    var tbod = "<tbody>";
     var tbody = "<span></span>";
-    tbod = "<tbody>";
-    resulth = `<!DOCTYPE html>
+    var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
           <meta charset="utf-8">
@@ -189,7 +179,7 @@ var server = http.createServer(function (req, res) {
                     request({
                         url: result[n].apiurl,
                         json: true
-                    }).then((bod) => {
+                    }).then(function (bod) {
                         var j = bod;
                         tbod += '<tr>';
                         if (onArray(validated.pools, String(name).split("<br>")[0])) {
@@ -212,7 +202,7 @@ var server = http.createServer(function (req, res) {
                         //console.log(tbody);
                         //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
-                    }).catch((err) => {
+                    }).catch(function (err) {
 
                     });
                 }
