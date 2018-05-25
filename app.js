@@ -114,6 +114,7 @@ var server = http.createServer(function (req, res) {
             response.writeHead(404, 'Resource Not Found', { 'Content-Type': 'text/html' });
             response.end('<!doctype html><html><head><title>404</title></head><body>404: Resource Not Found</body></html>');
         }
+        return;
     }
 
     var get = urlg.parse(req.url, true).query;
