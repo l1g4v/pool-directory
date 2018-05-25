@@ -152,6 +152,7 @@ var server = http.createServer(function (req, res) {
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
+    var tbody=null;
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -198,7 +199,7 @@ var server = http.createServer(function (req, res) {
                                 <td>${fee}</td>
                                 </tr>`;
                         //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
-
+                        console.log(tbod);
                     }).catch((err) => {
 
                     });
@@ -230,7 +231,6 @@ var server = http.createServer(function (req, res) {
     //
     //resulth = resulth.replace(/<\/?(tbody)>/g, `${tbod}</tbody>`);
     //
-    console.log(resulth);
     res.end(resulth);
     //res.end();
 
