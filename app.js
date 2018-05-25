@@ -54,10 +54,8 @@ function addPool(dat){
 var server = http.createServer(function (req, res) {
     if (req.method === 'GET' && req.url === '/favicon.ico') {
         res.writeHead(200, { 'Content-Type': 'image/png' });
-        
-        res.end(fs.readSync('favicon.png'));
-
-        return;
+        var fileStream = fs.createReadStream("./favicon.ico");
+        return fileStream.pipe(response);
     }
     /*if (req.method === 'POST') {
         if (req.url === "/inbound") {
@@ -234,6 +232,7 @@ var server = http.createServer(function (req, res) {
     //
     resulth += endd.replace(/<\/?(tbody)>/g, `${tbod}</tbody>`);;
     //
+    console.log(resulth);
     res.end(resulth);
     //res.end();
 
