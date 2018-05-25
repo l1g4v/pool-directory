@@ -221,7 +221,7 @@ var server = http.createServer(function (req, res) {
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         </html>
         `;
-        res.write(resulth);
+        res.end(resulth);
 
             } else {
                 tbod += "<tr><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td><td>NO DATA</td></tr>";
@@ -235,7 +235,7 @@ var server = http.createServer(function (req, res) {
     //
     //resulth = resulth.replace(/<\/?(tbody)>/g, `${tbod}</tbody>`);
     //
-    res.end();
+    //res.end();
     //res.end();
 
 
