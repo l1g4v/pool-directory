@@ -97,7 +97,7 @@ var server = http.createServer(function (req, res) {
                     c.shutdown();
                 }
                 if(valids===stlg){
-                    var pol={name:``,stratums:data.stratums,fee:data.fee, apiurl: data.apiurl}
+                    var pol={name:`${data.name}<br>${data.url}`,stratums:data.stratums,fee:data.fee, apiurl: data.apiurl}
                     if(addPool(pol)){
                         res.end("0");
                         return;
