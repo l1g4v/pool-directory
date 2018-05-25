@@ -6,6 +6,15 @@ var validated = require('./validated.json');
 var request = require("request-promise");
 var fs = require('fs');
 
+
+
+
+
+
+var tbod = "<tbody>";
+var resulth = "=";
+
+
 /*MongoClient.connect(url, function (err, db) {
     if (err) throw err;
     var dbo = db.db("pooldb");
@@ -151,9 +160,10 @@ var server = http.createServer(function (req, res) {
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    var tbod = "<tbody>";
+
     var tbody = "<span></span>";
-    var resulth = `<!DOCTYPE html>
+    tbod = "<tbody>";
+    resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
           <meta charset="utf-8">
@@ -207,7 +217,7 @@ var server = http.createServer(function (req, res) {
                     });
                 }
                 //console.log(tbody);
-                resulth += `${tbody}</tbody></table></div></body>
+                resulth += `${tbod}</tbody></table></div></body>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
@@ -222,7 +232,7 @@ var server = http.createServer(function (req, res) {
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         </html>
         `;
-                console.log(tbody);
+                console.log(tbod);
                 res.end(resulth);
 
             }
