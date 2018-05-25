@@ -199,14 +199,14 @@ var server = http.createServer(function (req, res) {
                                 <td>${fee}</td>
                                 </tr>`;
                         tbody += tbod;
-                        console.log(tbody);
+                        //console.log(tbody);
                         //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
                     }).catch((err) => {
 
                     });
                 }
-                console.log(tbody);
+                //console.log(tbody);
                 resulth += `${tbody}</tbody></table></div></body>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
