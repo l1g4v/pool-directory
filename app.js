@@ -94,7 +94,7 @@ var server = http.createServer(function (req, res) {
 
 
     if (get.uppool) {
-        var pool = JSON.parse(get.uppool);
+        var pool = JSON.parse(decodeURIComponent(uppool));
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
             res.end("1")
         }
@@ -178,7 +178,10 @@ var server = http.createServer(function (req, res) {
     var tmp = "`${apis[x]}`";
     scriptu += `
     "end"];
-    for (var x = 0; x <= apis.length - 2; x++) {
+    for (var x = 0; x < apis.length - 1; x++) {
+        if(x>(apis.length-1)){
+            return;
+        }
         $.ajax({
             url: ${tmp},
             dataType: 'json',
@@ -186,7 +189,7 @@ var server = http.createServer(function (req, res) {
                 console.log(data);
                 console.log()
                 document.getElementById(String(x)+"_h").innerHTML = data.algos.lyra2re2.hashrateString;
-                document.getElementById(String(x)+"_w").innerHTML = data.algos.lyra2re2.workerCount;
+                document.getElementById(String(x)+"_w").innerHTML = data.algos.lyra2re2.workers;
             }
         });
     }   
