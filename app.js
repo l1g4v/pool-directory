@@ -28,6 +28,7 @@ function getStats(url) {
     var st = {};
     request(url, function (error, response, body) {
         var j = JSON.parse(body);
+        console.log(j);
         st = { worker: j.pools.ponycoin.workerCount, hashr: j.pools.ponycoin.hashrateString };
     });
     return st;
@@ -152,7 +153,7 @@ var server = http.createServer(function (req, res) {
 
     for (var p = 0; p < database.length; p++) {
         tbod += "<tr>";
-        if (onArray(validated, String(database[p].name).split("<br>")[0])) {
+        if (onArray(validated, String(database[p].name))) {
             tbod += `<td>${database[p].name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
         } else {
             tbod += `<td>${database[p].name}</td>`;
@@ -204,7 +205,8 @@ var server = http.createServer(function (req, res) {
 });
 setInterval(reloaddb, 60 * 10 * 1000);
 function reloaddb() {
-    validated = require('./pools.json');
+    validated = require('./validated.json');
+    database = require('./pools.json');
 }
 server.listen(8089);
 
