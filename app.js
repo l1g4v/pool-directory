@@ -110,10 +110,12 @@ var server = http.createServer(function (req, res) {
         var socket = require('node-simple-socket');
 
         socket.connect(parseInt(String(pool.stratums[0]).split(":")[1]), String(pool.stratums[0]).split(":")[0]).then(function(cts) {
-            cts.write(new Buffer(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`)).then((r) => {
-                cts.readString().then((result) => {
+            socket.write(new Buffer(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`)).then((r) => {
+                socket.readString().then((result) => {
+                    console.log(result);
                     if(result===`{"id":"mining.authorize","result":true,"error":null}`){
-                        return res.end("0");
+                        var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
+                        if(sudb) {done = true; return res.end("0");}
                     }else{
                         return res.end("-1");
                     }
