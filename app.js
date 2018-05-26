@@ -158,6 +158,7 @@ var server = http.createServer(function (req, res) {
     }
     var tmp="`${apis[x]}`";
     scriptu += `
+    "end"];
     for (var x = 0; x < apis.lenght - 1; x++) {
         $.ajax({
             url: ${tmp},
