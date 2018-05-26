@@ -2,6 +2,8 @@ var http = require('http');
 var urlg = require('url');
 var database = require('./pools.json');
 var validated = require("./validated.json").pools;
+
+var pool_domain = "pools.ponycoin.tk";
 //var formidable = require('formidable');
 //var client = require("stratum-client");
 var fs = require('fs');
@@ -102,52 +104,55 @@ var server = http.createServer(function (req, res) {
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
             res.end("1")
         }
-        if(onPool(pool.wbsite)){
+        if (onPool(pool.wbsite)) {
             return res.end("-1");
         }
-        console.log(parseInt(String(pool.stratums[0]).split(":")[1]));
+        var PORT = parseInt(String(pool.stratums[0]).split(":")[1]);
+        var ADDR = parseInt(String(pool.stratums[0]).split(":")[0]);
+        validPool(pool,res);
+        //res.end(`Verifying pool... If I pass the test, it will be available in https://${pool_domain}`);
 
-/*
-        var socket = require('node-simple-socket');
-
-        socket.connect(parseInt(String(pool.stratums[0]).split(":")[1]), String(pool.stratums[0]).split(":")[0]).then((cts) => {
-            console.log(cst);
-            cts.write(new Buffer(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`,)).then((r) => {
-                cts.readString().then((result) => {
-                    console.log(result);
-                    if(result===`{"id":"mining.authorize","result":true,"error":null}`){
-                        var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
-                        if(sudb) {done = true; return res.end("0");}
-                    }else{
-                        return res.end("-1");
-                    }
-                }).catch((err) => {
-                    
-                });
-            }).catch((err) => {
-                
-            });
-        }).catch((err) => {
-            // could not connect
-        });
-/*
-        var done=false;
-        var c = client({
-            server: String(pool.stratums[0]).split(":")[0],
-            port: parseInt(String(pool.stratums[0]).split(":")[1]),
-            worker: "pool_directory_tester",
-            autoReconnectOnError: true,
-            onConnect: () => console.log('Connected to server'),
-            onClose: () => console.log('Connection closed'),
-            onError: (error) => function (){done=true; res.end("2");},
-            onAuthorize: () => function () {
-                var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
-                if(sudb) {done = true; res.end("0");}
-                else {done=true;res.end("-1");}
-            }
-        });*/
-        return;
+        /*
+                var socket = require('node-simple-socket');
         
+                socket.connect(parseInt(String(pool.stratums[0]).split(":")[1]), String(pool.stratums[0]).split(":")[0]).then((cts) => {
+                    console.log(cst);
+                    cts.write(new Buffer(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`,)).then((r) => {
+                        cts.readString().then((result) => {
+                            console.log(result);
+                            if(result===`{"id":"mining.authorize","result":true,"error":null}`){
+                                var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
+                                if(sudb) {done = true; return res.end("0");}
+                            }else{
+                                return res.end("-1");
+                            }
+                        }).catch((err) => {
+                            
+                        });
+                    }).catch((err) => {
+                        
+                    });
+                }).catch((err) => {
+                    // could not connect
+                });
+        /*
+                var done=false;
+                var c = client({
+                    server: String(pool.stratums[0]).split(":")[0],
+                    port: parseInt(String(pool.stratums[0]).split(":")[1]),
+                    worker: "pool_directory_tester",
+                    autoReconnectOnError: true,
+                    onConnect: () => console.log('Connected to server'),
+                    onClose: () => console.log('Connection closed'),
+                    onError: (error) => function (){done=true; res.end("2");},
+                    onAuthorize: () => function () {
+                        var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
+                        if(sudb) {done = true; res.end("0");}
+                        else {done=true;res.end("-1");}
+                    }
+                });*/
+        return;
+
     }
 
     if (get.raw) {
@@ -245,15 +250,46 @@ data();
 
 
 });
+
+function validPool(DATA, res) {
+    var conn = new net.Socket();
+    var PORT = parseInt(String(DATA.stratums[0]).split(":")[1]);
+    var ADDR = parseInt(String(DATA.stratums[0]).split(":")[0]);
+    try {
+        conn.connect(PORT, ADDR, function () {
+            console.log('conn to: ' + ADDR + ':' + PORT);
+            client.write(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`);
+        });
+
+    } catch (error) {
+        res.end("-1");
+    }
+
+
+    conn.on('data', function (data) {
+        console.log('data: ' + data);
+        if (data === `{"id":"mining.authorize","result":true,"error":null}`) {
+            var sudb = updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
+            if (sudb) { done = true; res.end("0"); }
+            else res.end("-1");
+        }
+        conn.destroy();
+    });
+
+    conn.on('close', function () {
+        console.log("done");
+    });
+};
+
 function updateDB(value) {
     database.push(value);
-    try{
+    try {
         fs.writeFileSync("pools.json", JSON.stringify(database));
-    }catch(e){
+    } catch (e) {
         return false;
     }
     return true;
-    
+
 }
 
 setInterval(reloaddb, 60 * 10 * 1000);
