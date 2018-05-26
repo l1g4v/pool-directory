@@ -167,7 +167,6 @@ var server = http.createServer(function (req, res) {
 
     }
     var tmp = "`${apis[x]}`";
-    var tmp2 = "document.getElementById(`${x}_h`).innerHTML = data.pools.ponycoin.hashrateString;document.getElementById(`${x}_w`).innerHTML = data.pools.ponycoin.workerCount;"
     scriptu += `
     "end"];
     for (var x = 0; x < apis.length - 1; x++) {
@@ -176,13 +175,14 @@ var server = http.createServer(function (req, res) {
             dataType: 'json',
             success: function (data) {
                 console.log(data);
-                ${tmp2}
+                document.getElementById(String(x)+"_h").innerHTML = data.pools.ponycoin.hashrateString;
+                document.getElementById(String(x)+"_w").innerHTML = data.pools.ponycoin.workerCount;
             }
         });
     }   
 }
 data();
-    </script>`;
+</script>`;
 
     resulth += `${tbod}</tbody></table></div></body>
         ${scriptu}

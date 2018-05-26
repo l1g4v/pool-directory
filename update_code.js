@@ -6,8 +6,8 @@ function data() {
             dataType: 'json',
             success: function (data) {
                 console.log(data);
-                document.getElementById(`${x}_h`).innerHTML = data.pools.ponycoin.hashrateString;
-                document.getElementById(`${x}_w`).innerHTML = data.pools.ponycoin.workerCount;
+                document.getElementById(String(x)+"_h").innerHTML = data.pools.ponycoin.hashrateString;
+                document.getElementById(String(x)+"_w").innerHTML = data.pools.ponycoin.workerCount;
             }
         });
     }
