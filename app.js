@@ -55,7 +55,7 @@ var server = http.createServer(function (req, res) {
         return;
     }
     else {
-        var origin = (request.headers.origin || "*");
+        var origin = (req.headers.origin || "*");
         res.writeHead(200, {
             'Content-Type': 'text/html', 
             "access-control-allow-origin": origin,
