@@ -166,7 +166,7 @@ var server = http.createServer(function (req, res) {
         }
         tbod += '</td>';
         //var stt=getStats(database[p].apiurl);
-        scriptu += `"${apiurl}",`;
+        scriptu += `"${database[p].apiurl}",`;
         tbod += `<td id="${p}_h">null</td>
                                 <td id="${p}_w">$null</td>
                                 <td>${database[p].fee}</td>
