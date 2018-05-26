@@ -4,6 +4,7 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 var database = require('./pools.json');
 var request = require("request-promise");
+var validated= require("./validated.json");
 var fs = require('fs');
 
 /*MongoClient.connect(url, function (err, db) {
