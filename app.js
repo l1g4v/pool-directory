@@ -132,7 +132,7 @@ var server = http.createServer(function (req, res) {
           <h2>pools directory</h2><div class="container">
           <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i> Verified pools<br>
           <input type="text" id="sinput" onkeyup="filterr()" placeholder="Search by name..." title="type"><br>
-          <table class="table" id="table"> <thead> <tr> <th>Name</th> <th>Stratum urls</th> <th id="hrate" data-sorted="true" data-sorted-direction="descending">Hashrate</th> <th>Workers</th> <th>Fee</th> </tr> </thead>`;
+          <table data-sortable="" data-sortable-initialized="true" class="table" id="table"> <thead> <tr> <th data-sorted="false">Name</th> <th data-sorted="false">Stratum urls</th> <th id="hrate" data-sorted="true" data-sorted-direction="descending">Hashrate</th> <th data-sorted="false">Workers</th> <th data-sorted="false">Fee</th> </tr> </thead>`;
 
     for (var p = 0; p < database.length; p++) {
         tbod += "<tr>";
