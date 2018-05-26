@@ -126,7 +126,7 @@ var server = http.createServer(function (req, res) {
 
     for (var p = 0; p < database.length; p++) {
         tbod += "<tr>";
-        scriptu += `"${database[p].apiurl}"`;
+        scriptu += `"${database[p].apiurl}",`;
         if (onArray(validated, database[p].name)) {
             tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
         } else {
