@@ -1,7 +1,7 @@
 var http = require('http');
 var urlg = require('url');
 var database = require('./pools.json');
-var validated = require("./validated.json");
+var validated = require("./validated.json").pools;
 var formidable = require('formidable');
 var client = require("stratum-client");
 var fs = require('fs');
@@ -128,16 +128,16 @@ var server = http.createServer(function (req, res) {
           <meta name="author" content="">
           <title>Mining Pools</title>
           </head>
-          <body onload="data();" class="text-center">
+          <body onload="document.getElementById('hrate').click();" class="text-center">
           <h2>pools directory</h2><div class="container">
           <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i> Verified pools<br>
           <input type="text" id="sinput" onkeyup="filterr()" placeholder="Search by name..." title="type"><br>
-          <table class="table" id="table"> <thead> <tr> <th>Name</th> <th>Stratum urls</th> <th>Hashrate</th> <th>Workers</th> <th>Fee</th> </tr> </thead>`;
+          <table class="table" id="table"> <thead> <tr> <th>Name</th> <th>Stratum urls</th> <th id="hrate" data-sorted="true" data-sorted-direction="descending">Hashrate</th> <th>Workers</th> <th>Fee</th> </tr> </thead>`;
 
     for (var p = 0; p < database.length; p++) {
         tbod += "<tr>";
         scriptu += `"${database[p].apiurl}",`;
-        if (onArray(validated, database[p].name)) {
+        if (onArray(validated, database[p].wbsite)) {
             tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
         } else {
             tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a></td>`;
