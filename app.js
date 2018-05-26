@@ -113,9 +113,9 @@ var server = http.createServer(function (req, res) {
             cts.write(new Buffer(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`)).then((r) => {
                 cts.readString().then((result) => {
                     if(result===`{"id":"mining.authorize","result":true,"error":null}`){
-                        return res.end(0);
+                        return res.end("0");
                     }else{
-                        return res.end(-1);
+                        return res.end("-1");
                     }
                 }).catch((err) => {
                     
