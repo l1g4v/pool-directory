@@ -103,12 +103,12 @@ var server = http.createServer(function (req, res) {
     }
 
     if (get.raw) {
-        res.end(validated);
+        res.end(database);
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
-    var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){`
+    var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -126,6 +126,7 @@ var server = http.createServer(function (req, res) {
 
     for (var p = 0; p < database.length; p++) {
         tbod += "<tr>";
+        scriptu += `"${database[p].apiurl}"`;
         if (onArray(validated, database[p].name)) {
             tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
         } else {
@@ -142,6 +143,7 @@ var server = http.createServer(function (req, res) {
                                 <td>${database[p].fee}</td>
                                 </tr>`;
         tbod += "</tr>";
+        /*
         scriptu += `
         $.ajax({
             url: "${database[p].apiurl}",
@@ -151,12 +153,14 @@ var server = http.createServer(function (req, res) {
                 document.getElementById(${p} + "_h").innerHTML = data.pools.ponycoin.hashrateString;
                 document.getElementById(${p} + "_w").innerHTML = data.pools.ponycoin.workerCount;
             }
-        });`;
+        });`;*/
 
     }
+    var tmp="`${apis[x]}`";
     scriptu += `
+    for (var x = 0; x < apis.lenght - 1; x++) {
         $.ajax({
-            url: apis[x],
+            url: ${tmp},
             dataType: 'json',
             success: function (data) {
                 console.log(data);
@@ -164,7 +168,7 @@ var server = http.createServer(function (req, res) {
                 document.getElementById(x + "_w").innerHTML = data.pools.ponycoin.workerCount;
             }
         });
-    
+    }   
 }
 data();
     </script>`;
@@ -192,7 +196,7 @@ function reloaddb() {
     validated = require('./validated.json');
     database = require('./pools.json');
 }
-server.listen(8087);
+server.listen(8089);
 
 /*
 API stats format

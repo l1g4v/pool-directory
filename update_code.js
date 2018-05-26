@@ -2,7 +2,7 @@ function data() {
     var apis = [];
     for (var x = 0; x < apis.lenght - 1; x++) {
         $.ajax({
-            url: apis[x],
+            url: `${apis[x]}`,
             dataType: 'json',
             success: function (data) {
                 console.log(data);
