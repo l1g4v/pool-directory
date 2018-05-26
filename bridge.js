@@ -77,12 +77,7 @@ module.exports = {
                         request({
                             url: result[n].apiurl,
                             json: true
-                        }).then((bod) => {
-                            //var j = bod;
-                            procdt(result,bod);
-
-
-                        }).catch((err) => {
+                        }).then((bod) => procdt(result,bod)).catch((err) => {
 
                         });
                     }
