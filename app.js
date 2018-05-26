@@ -1,11 +1,11 @@
+
+
 var http = require('http');
 var urlg = require('url');
 var database = require('./pools.json');
 var validated = require("./validated.json").pools;
 var net = require('net');
 var pool_domain = "pools.ponycoin.tk";
-//var formidable = require('formidable');
-//var client = require("stratum-client");
 var fs = require('fs');
 
 
@@ -34,67 +34,6 @@ var server = http.createServer(function (req, res) {
         var fileStream = fs.createReadStream("./favicon.png");
         return fileStream.pipe(res);
     }
-
-    /*
-    {"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}
-    
-    if (req.method === 'POST') {
-        if (req.url === "/inbound") {
-            var requestBody = '';
-            req.on('data', function (data) {
-                requestBody += data;
-                if (requestBody.length > 1e7) {
-                    res.writeHead(413, 'Request Entity Too Large', { 'Content-Type': 'text/html' });
-                    res.end('<!doctype html><html><head><title>413</title></head><body>413: Request Entity Too Large</body></html>');
-                }
-            });
-            req.on('end', function () {
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                var data = JSON.parse(requestBody);
-                if(!data.name && !data.url && !data.stratums && !data.fee && !data.apiurl){
-                    res.end("1");
-                    return;
-                }
-                if(!typeof data.stratums === 'array'){
-                    res.end("1");
-                    return;
-                }
-                var client = require('stratum-client');
-                var stlg=data.stratums.length;
-                var valids=1;
-                for(var s=0;s<data.stratums.length;s++){
-                    var c = client({
-                        server: String(data.stratums[s]).split(":")[0],
-                        port: parseInt(String(data.stratums[s]).split(":")[1]),
-                        worker: "pool_directory_tester",
-                        autoReconnectOnError: true,
-                        onConnect: () => console.log('Connected to server'),
-                        onClose: () => console.log('Connection closed'),
-                        onError: (error) => res.end("2"),
-                        onAuthorize: () => function(){valids++;}
-                    });
-                    c.shutdown();
-                }
-                if(valids===stlg){
-                    var pol={name:`${data.name}<br>${data.url}`,stratums:data.stratums,fee:data.fee, apiurl: data.apiurl}
-                    if(addPool(pol)){
-                        res.end("0");
-                        return;
-                    }else{
-                        res.end("-1");
-                    return;
-                    }
-                }else{
-                    res.end("2");
-                    return;
-                }
-            });
-        } else {
-            response.writeHead(404, 'Resource Not Found', { 'Content-Type': 'text/html' });
-            response.end('<!doctype html><html><head><title>404</title></head><body>404: Resource Not Found</body></html>');
-        }
-        return;
-    }*/
     var get = urlg.parse(req.url, true).query;
 
 
@@ -155,17 +94,6 @@ var server = http.createServer(function (req, res) {
                                 <td>${database[p].fee}</td>
                                 </tr>`;
         tbod += "</tr>";
-        /*
-        scriptu += `
-        $.ajax({
-            url: "${database[p].apiurl}",
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                document.getElementById(${p} + "_h").innerHTML = data.pools.ponycoin.hashrateString;
-                document.getElementById(${p} + "_w").innerHTML = data.pools.ponycoin.workerCount;
-            }
-        });`;*/
 
     }
     var tmp = "`${apis[x]}`";
@@ -223,12 +151,12 @@ function validPool(DATA, res) {
     } catch (error) {
         res.end("-1");
     }
-    conn.on('data', function (data) {
-        console.log('recieved: ' + data);
-        var id = JSON.parse(data).id;
-        var mt = JSON.parse(data).method;
+    conn.on('data', function (d) {
+        console.log('recieved: ' + d);
+        var id = JSON.parse(d).id;
+        var mt = JSON.parse(d).method;
         if (id === `mining.authorize`||mt === `mining.notify`) {
-            var sudb = updateDB({ name: data.name, wbsite: data.wbsite, stratums: data.stratums, apiurl: data.apiurl, fee: data.fee });
+            var sudb = updateDB({ name: DATA.name, wbsite: DATA.wbsite, stratums: DATA.stratums, apiurl: DATA.apiurl, fee: DATA.fee });
             if (sudb) { done = true; res.end("0"); }
             else res.end("-1");
             conn.destroy();
