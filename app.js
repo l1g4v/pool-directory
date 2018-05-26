@@ -3,6 +3,7 @@ var urlg = require('url');
 var database = require('./pools.json');
 var validated = require("./validated.json");
 var formidable = require('formidable');
+var client = require("stratum-client");
 var fs = require('fs');
 
 
@@ -25,7 +26,7 @@ var server = http.createServer(function (req, res) {
         var fileStream = fs.createReadStream("./favicon.png");
         return fileStream.pipe(res);
     }
-    
+
     /*if (req.method === 'POST') {
         if (req.url === "/inbound") {
             var requestBody = '';
@@ -85,25 +86,34 @@ var server = http.createServer(function (req, res) {
     }*/
     var get = urlg.parse(req.url, true).query;
 
-    if (req.url == '/fileupload') {
-        var form = new formidable.IncomingForm();
-        form.parse(req, function (err, fields, files) {
-          res.write('File uploaded');
-          res.end();
-        });
-      }
 
-    if(get.uppool){
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
-        res.write('<input type="file" name="filetoupload"><br>');
-        res.write('<input type="submit">');
-        res.write('</form>');
-        return res.end();
+    if (get.uppool) {
+        var pool = JSON.parse(get.uppool);
+        if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
+            res.end("1")
+        }
+        var c = client({
+            server: String(pool.stratums[0]).split(":")[0],
+            port: parseInt(String(pool.stratums[0]).split(":")[1]),
+            worker: "pool_directory_tester",
+            autoReconnectOnError: true,
+            onConnect: () => console.log('Connected to server'),
+            onClose: () => console.log('Connection closed'),
+            onError: (error) => res.end("2"),
+            onAuthorize: () => function () {
+                var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
+                if(sudb) return res.end("0");
+                else return res.end("-1");
+            }
+        });
+        c.shutdown();
+        return;
+
     }
 
     if (get.raw) {
-        res.end(database);
+        res.end(JSON.stringify(database));
+        return;
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -156,8 +166,8 @@ var server = http.createServer(function (req, res) {
         });`;*/
 
     }
-    var tmp="`${apis[x]}`";
-    var tmp2="document.getElementById(`${x}_h`).innerHTML = data.pools.ponycoin.hashrateString;document.getElementById(`${x}_w`).innerHTML = data.pools.ponycoin.workerCount;"
+    var tmp = "`${apis[x]}`";
+    var tmp2 = "document.getElementById(`${x}_h`).innerHTML = data.pools.ponycoin.hashrateString;document.getElementById(`${x}_w`).innerHTML = data.pools.ponycoin.workerCount;"
     scriptu += `
     "end"];
     for (var x = 0; x < apis.length - 1; x++) {
@@ -192,6 +202,17 @@ data();
 
 
 });
+function updateDB(value) {
+    database.push(value);
+    try{
+        fs.writeFileSync("pools.json", JSON.stringify(database));
+    }catch(e){
+        return false;
+    }
+    return true;
+    
+}
+
 setInterval(reloaddb, 60 * 10 * 1000);
 function reloaddb() {
     validated = require('./validated.json');
