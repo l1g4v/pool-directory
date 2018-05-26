@@ -51,14 +51,17 @@ var server = http.createServer(function (req, res) {
     }
 
     else if (get.raw) {
+        var origin = (req.headers.origin || "*");
+        res.writeHead(200, {
+            'Content-Type': 'text/plain', 
+            "access-control-allow-origin": origin,
+        });
         res.end(JSON.stringify(database));
         return;
     }
     else {
-        var origin = (req.headers.origin || "*");
         res.writeHead(200, {
-            'Content-Type': 'text/html', 
-            "access-control-allow-origin": origin,
+            'Content-Type': 'text/html'
         });
         var tbod = "<tbody>";
         var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
