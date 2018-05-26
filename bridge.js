@@ -72,7 +72,7 @@ module.exports = {
                                 <td>${fee}</td>
                                 </tr>`);
                             //tbody += tbod;
-                            //console.log(tbody);
+                            console.log(getbod());
                             //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
                         }).catch((err) => {
