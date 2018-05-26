@@ -110,6 +110,7 @@ var server = http.createServer(function (req, res) {
         var socket = require('node-simple-socket');
 
         socket.connect(parseInt(String(pool.stratums[0]).split(":")[1]), String(pool.stratums[0]).split(":")[0]).then((cts) => {
+            console.log(cst);
             cts.write(new Buffer(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`,)).then((r) => {
                 cts.readString().then((result) => {
                     console.log(result);
