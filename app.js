@@ -97,7 +97,7 @@ var server = http.createServer(function (req, res) {
 
 
     if (get.uppool) {
-        console.log(get.uppool);
+        //console.log(get.uppool);
         var pool = JSON.parse(get.uppool);
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
             res.end("1")
@@ -105,8 +105,9 @@ var server = http.createServer(function (req, res) {
         if(onPool(pool.wbsite)){
             return res.end("-1");
         }
+        console.log(parseInt(String(pool.stratums[0]).split(":")[1]));
 
-
+/*
         var socket = require('node-simple-socket');
 
         socket.connect(parseInt(String(pool.stratums[0]).split(":")[1]), String(pool.stratums[0]).split(":")[0]).then((cts) => {
