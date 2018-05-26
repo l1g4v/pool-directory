@@ -102,6 +102,7 @@ var server = http.createServer(function (req, res) {
         if(onPool(pool.wbsite)){
             return res.end("-1");
         }
+        var done=false;
         var c = client({
             server: String(pool.stratums[0]).split(":")[0],
             port: parseInt(String(pool.stratums[0]).split(":")[1]),
@@ -109,16 +110,19 @@ var server = http.createServer(function (req, res) {
             autoReconnectOnError: true,
             onConnect: () => console.log('Connected to server'),
             onClose: () => console.log('Connection closed'),
-            onError: (error) => res.end("2"),
+            onError: (error) => function (){done=true; res.end("2");},
             onAuthorize: () => function () {
                 var sudb=updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
-                if(sudb) return res.end("0");
-                else return res.end("-1");
+                if(sudb) {done = true; res.end("0");}
+                else {done=true;res.end("-1");}
             }
         });
-        c.shutdown();
+        while(done){
+            c.shutdown();
         return;
 
+        }
+        
     }
 
     if (get.raw) {
