@@ -13,6 +13,12 @@ function onArray(array, value) {
     } return false;
 }
 
+function onPool(value) {
+    for (e = 0; e < database.length; e++) {
+        if (database[e].wbsite == value) return true;
+    } return false;
+}
+
 /**
  * Response codes
  * -1: error
@@ -92,6 +98,9 @@ var server = http.createServer(function (req, res) {
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
             res.end("1")
         }
+        if(onPool(pool.wbsite)){
+            return res.end("-1");
+        }
         var c = client({
             server: String(pool.stratums[0]).split(":")[0],
             port: parseInt(String(pool.stratums[0]).split(":")[1]),
@@ -169,14 +178,15 @@ var server = http.createServer(function (req, res) {
     var tmp = "`${apis[x]}`";
     scriptu += `
     "end"];
-    for (var x = 0; x < apis.length - 1; x++) {
+    for (var x = 0; x <= apis.length - 2; x++) {
         $.ajax({
             url: ${tmp},
             dataType: 'json',
             success: function (data) {
                 console.log(data);
-                document.getElementById(String(x)+"_h").innerHTML = data.pools.ponycoin.hashrateString;
-                document.getElementById(String(x)+"_w").innerHTML = data.pools.ponycoin.workerCount;
+                console.log()
+                document.getElementById(String(x)+"_h").innerHTML = data.algos.lyra2re2.hashrateString;
+                document.getElementById(String(x)+"_w").innerHTML = data.algos.lyra2re2.workerCount;
             }
         });
     }   
