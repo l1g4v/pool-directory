@@ -38,6 +38,7 @@ function getraw() {
 }
 
 function procdt(result, j) {
+    
     var name = result[n].name;
     var stratums = result[n].stratums;
     var fee = result[n].fee;
@@ -78,7 +79,7 @@ module.exports = {
                             json: true
                         }).then((bod) => {
                             //var j = bod;
-                            procdt(bod);
+                            procdt(result,bod);
 
 
                         }).catch((err) => {
