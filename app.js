@@ -145,7 +145,7 @@ var server = http.createServer(function (req, res) {
           <meta name="author" content="">
           <title>Mining Pools</title>
           </head>
-          <body class="text-center">
+          <body onload="data();" class="text-center">
           <h2>pools directory</h2><div class="container">
           <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i> Verified pools<br>
           <input type="text" id="sinput" onkeyup="filterr()" placeholder="Search by name..." title="type"><br>
