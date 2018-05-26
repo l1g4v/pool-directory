@@ -42,23 +42,23 @@ var server = http.createServer(function (req, res) {
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
             res.end("1");
         }
-        if (onPool({n:pool.name,w:pool.wbsite})) {
+        if (onPool({ n: pool.name, w: pool.wbsite })) {
             return res.end("-1");
         }
-        validPool(pool,res);
+        validPool(pool, res);
         return;
 
     }
 
-    if (get.raw) {
+    else if (get.raw) {
         res.end(JSON.stringify(database));
         return;
     }
-
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    var tbod = "<tbody>";
-    var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
-    var resulth = `<!DOCTYPE html>
+    else {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        var tbod = "<tbody>";
+        var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
+        var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
           <meta charset="utf-8">
@@ -73,29 +73,29 @@ var server = http.createServer(function (req, res) {
           <input type="text" id="sinput" onkeyup="filterr()" placeholder="Search by name..." title="type"><br>
           <table data-sortable="" data-sortable-initialized="true" class="table" id="table"> <thead> <tr> <th data-sorted="false">Name</th> <th data-sorted="false">Stratum urls</th> <th id="hrate" data-sorted="true" data-sorted-direction="descending">Hashrate</th> <th data-sorted="false">Workers</th> <th data-sorted="false">Fee</th> </tr> </thead>`;
 
-    for (var p = 0; p < database.length; p++) {
-        tbod += "<tr>";
-        scriptu += `"${database[p].apiurl}",`;
-        if (onArray(validated, database[p].wbsite)) {
-            tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
-        } else {
-            tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a></td>`;
-        }
+        for (var p = 0; p < database.length; p++) {
+            tbod += "<tr>";
+            scriptu += `"${database[p].apiurl}",`;
+            if (onArray(validated, database[p].wbsite)) {
+                tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
+            } else {
+                tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a></td>`;
+            }
 
-        tbod += '<td>';
-        for (var s = 0; s < database[p].stratums.length; s++) {
-            if(database[p].stratums[s]!=="")
-            tbod += `<code>stratum+tcp://${database[p].stratums[s]}</code><br>`;
-        }
-        tbod += '</td>';
-        tbod += `<td id="${p}_h">null</td>
+            tbod += '<td>';
+            for (var s = 0; s < database[p].stratums.length; s++) {
+                if (database[p].stratums[s] !== "")
+                    tbod += `<code>stratum+tcp://${database[p].stratums[s]}</code><br>`;
+            }
+            tbod += '</td>';
+            tbod += `<td id="${p}_h">null</td>
                                 <td id="${p}_w">$null</td>
                                 <td>${database[p].fee}</td>
                                 </tr>`;
-        tbod += "</tr>";
+            tbod += "</tr>";
 
-    }
-    scriptu += `
+        }
+        scriptu += `
     "end"];
     for (var x = 0; x < apis.length - 1; x++) {
         var api=apis[x];
@@ -114,7 +114,7 @@ var server = http.createServer(function (req, res) {
 data();
 </script>`;
 
-    resulth += `${tbod}</tbody></table></div></body>
+        resulth += `${tbod}</tbody></table></div></body>
         ${scriptu}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
@@ -127,10 +127,11 @@ data();
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         </html>
         `;
-    console.log(tbod);
-    res.end(resulth);
+        console.log(tbod);
+        res.end(resulth);
 
 
+    }
 });
 
 function validPool(DATA, res) {
@@ -151,12 +152,12 @@ function validPool(DATA, res) {
         console.log('recieved: ' + d);
         var id = JSON.parse(d).id;
         var mt = JSON.parse(d).method;
-        if (id === `mining.authorize`||mt === `mining.notify`) {
+        if (id === `mining.authorize` || mt === `mining.notify`) {
             var sudb = updateDB({ name: DATA.name, wbsite: DATA.wbsite, stratums: DATA.stratums, apiurl: DATA.apiurl, fee: DATA.fee });
             if (sudb) { done = true; res.end("0"); }
             else res.end("-1");
             conn.destroy();
-        }        
+        }
     });
 
     conn.on('close', function () {
@@ -165,10 +166,10 @@ function validPool(DATA, res) {
 };
 
 function updateDB(value) {
-    var acdb=JSON.stringify(database);
-    var sdb=acdb.substring(0,acdb.length-1);
-    var nwdb=sdb+","+JSON.stringify(value)+"]";
-    database=JSON.parse(nwdb);
+    var acdb = JSON.stringify(database);
+    var sdb = acdb.substring(0, acdb.length - 1);
+    var nwdb = sdb + "," + JSON.stringify(value) + "]";
+    database = JSON.parse(nwdb);
     try {
         fs.writeFileSync("pools.json", JSON.stringify(database));
     } catch (e) {
