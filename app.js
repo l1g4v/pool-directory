@@ -135,7 +135,7 @@ var server = http.createServer(function (req, res) {
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
-    var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
+    var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){`
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -162,20 +162,26 @@ var server = http.createServer(function (req, res) {
         tbod += '<td>';
         for (var s = 0; s < database[p].stratums.length; s++) {
             tbod += `<code>stratum+tcp://${database[p].stratums[s]}</code><br>`;
-            //console.log(stratums[s]);
         }
         tbod += '</td>';
-        //var stt=getStats(database[p].apiurl);
-        scriptu += `"${database[p].apiurl}",`;
         tbod += `<td id="${p}_h">null</td>
                                 <td id="${p}_w">$null</td>
                                 <td>${database[p].fee}</td>
                                 </tr>`;
         tbod += "</tr>";
+        scriptu += `
+        $.ajax({
+            url: ${database[p].apiurl},
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                document.getElementById(${p} + "_h").innerHTML = data.pools.ponycoin.hashrateString;
+                document.getElementById(${p} + "_w").innerHTML = data.pools.ponycoin.workerCount;
+            }
+        });`;
 
     }
-    scriptu += `"end"];
-    for(var x=0;x<apis.lenght-1;x++){
+    scriptu += `
         $.ajax({
             url: apis[x],
             dataType: 'json',
@@ -185,7 +191,7 @@ var server = http.createServer(function (req, res) {
                 document.getElementById(x + "_w").innerHTML = data.pools.ponycoin.workerCount;
             }
         });
-    }
+    
 }
 data();
     </script>`;
@@ -205,15 +211,6 @@ data();
         `;
     console.log(tbod);
     res.end(resulth);
-
-    //conn = null;
-
-    //console.log(tbod);
-    //
-    //resulth = resulth.replace(/<\/?(tbody)>/g, `${tbod}</tbody>`);
-    //
-    //res.end();
-    //res.end();
 
 
 });
