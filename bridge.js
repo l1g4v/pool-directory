@@ -3,9 +3,9 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 var validated = require('./validated.json').pools;
 
-var tbod=`<tbody>`;
+var tbod = `<tbody>`;
 
-var raw=[];
+var raw = [];
 
 function onArray(array, value) {
     for (e = 0; e < array.length; e++) {
@@ -14,27 +14,53 @@ function onArray(array, value) {
 }
 
 function addtovar(value) {
-    tbod+=value;
+    tbod += value;
 }
 
-function resetbod(){
-    tbod=`<tbody>`;
+function resetbod() {
+    tbod = `<tbody>`;
 }
 
-function getbod(){
+function getbod() {
     return tbod;
 }
 
-function addtoraw(val){
+function addtoraw(val) {
     raw.push(val);
 }
 
-function resetraw(){
-    raw=[];
+function resetraw() {
+    raw = [];
 }
 
-function getraw(){
+function getraw() {
     return raw;
+}
+
+function procdt(result, j) {
+    var name = result[n].name;
+    var stratums = result[n].stratums;
+    var fee = result[n].fee;
+    addtovar('<tr>');
+    if (onArray(validated, String(name).split("<br>")[0])) {
+        addtovar(`<td>${name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`);
+    } else {
+        addtovar(`<td>${name}</td>`);
+    }
+
+    addtovar('<td>');
+    for (var s = 0; s < stratums.length; s++) {
+        addtovar(`<code>${stratums[s]}</code><br>`);
+        //console.log(stratums[s]);
+    }
+    addtovar('</td>');
+    addtovar(`<td>${j.pools.ponycoin.hashrateString}</td>
+                                <td>${j.pools.ponycoin.workerCount}</td>
+                                <td>${fee}</td>
+                                </tr>`);
+    //tbody += tbod;
+    console.log(getbod());
+    //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 }
 
 module.exports = {
@@ -46,40 +72,20 @@ module.exports = {
                 if (result.length > 0) {
                     for (var n = 0; n < result.length; n++) {
                         rl = result.length;
-                        var name = result[n].name;
-                        var stratums = result[n].stratums;
-                        var fee = result[n].fee;
+
                         request({
                             url: result[n].apiurl,
                             json: true
                         }).then((bod) => {
-                            var j = bod;
-                            addtovar('<tr>');
-                            if (onArray(validated, String(name).split("<br>")[0])) {
-                                addtovar(`<td>${name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`);
-                            } else {
-                                addtovar(`<td>${name}</td>`);
-                            }
+                            //var j = bod;
+                            procdt(bod);
 
-                            addtovar('<td>');
-                            for (var s = 0; s < stratums.length; s++) {
-                                addtovar(`<code>${stratums[s]}</code><br>`);
-                                //console.log(stratums[s]);
-                            }
-                            addtovar('</td>');
-                            addtovar(`<td>${j.pools.ponycoin.hashrateString}</td>
-                                <td>${j.pools.ponycoin.workerCount}</td>
-                                <td>${fee}</td>
-                                </tr>`);
-                            //tbody += tbod;
-                            console.log(getbod());
-                            //console.log(`${name} ${stratums} ${fee} ${j.pools.ponycoin.hashrateString} ${j.pools.ponycoin.workerCount}`);
 
                         }).catch((err) => {
 
                         });
                     }
-                    
+
                     //console.log(tbody);
 
 
@@ -90,7 +96,7 @@ module.exports = {
         return getbod();
 
     },
-    getPools:function(){
+    getPools: function () {
 
         resetraw();
         var conn = MongoClient.connect(url);
@@ -108,7 +114,7 @@ module.exports = {
                             json: true
                         }).then((bod) => {
                             var j = bod;
-                            
+
                             var newp = [{ name: `${data.name}`, stratums: data.stratums, fee: data.fee, workers: j.pools.ponycoin.workerCount, hashrate: j.pools.ponycoin.hashrateString }]
                             addtoraw(newp);
 
