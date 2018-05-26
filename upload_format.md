@@ -10,6 +10,8 @@ the api stats on you site need to have this format
 ```json
 {"time":1527202840,"global":{"workers":0,"hashrate":0},"algos":{"somealgo":{"workers":0,"hashrate":0,"hashrateString":"0.00 KH"}},"pools":{"somecoin":{"name":"somecoin","symbol":"SOME","algorithm":"somealgo","poolStats":{"validShares":0,"validBlocks":0,"invalidShares":0,"totalPaid":0},"blocks":{"pending":0,"confirmed":0,"orphaned":0},"workers":{},"hashrate":0,"workerCount":0,"hashrateString":"0.00 KH"}}}
 ```
+## IMPORTANT
+ - the api request must be have ```"Access-Control-Allow-Origin":"<pools_domain or '*'>}"``` header
 
 Url encode you json
 ```
