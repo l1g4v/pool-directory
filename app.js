@@ -264,8 +264,6 @@ function validPool(DATA, res) {
     } catch (error) {
         res.end("-1");
     }
-
-
     conn.on('data', function (data) {
         console.log('data: ' + data);
         if (data === `{"id":"mining.authorize","result":true,"error":null}`) {
