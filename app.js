@@ -17,7 +17,7 @@ function onArray(array, value) {
 
 function onPool(value) {
     for (e = 0; e < database.length; e++) {
-        if (database[e].wbsite == value) return true;
+        if (database[e].wbsite == value.n || database[e].wbsite == value.w) return true;
     } return false;
 }
 
@@ -102,13 +102,11 @@ var server = http.createServer(function (req, res) {
         //console.log(get.uppool);
         var pool = JSON.parse(get.uppool);
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
-            res.end("1")
+            res.end("1");
         }
-        if (onPool(pool.wbsite)) {
+        if (onPool({n:pool.name,w:pool.wbsite})) {
             return res.end("-1");
         }
-        var PORT = parseInt(String(pool.stratums[0]).split(":")[1]);
-        var ADDR = parseInt(String(pool.stratums[0]).split(":")[0]);
         validPool(pool,res);
         //res.end(`Verifying pool... If I pass the test, it will be available in https://${pool_domain}`);
 
@@ -255,18 +253,17 @@ function validPool(DATA, res) {
     var conn = new net.Socket();
     var PORT = parseInt(String(DATA.stratums[0]).split(":")[1]);
     var ADDR = String(DATA.stratums[0]).split(":")[0];
-    console.log('conn to: ' + ADDR + ':' + PORT);
     try {
         conn.connect(PORT, ADDR, function () {
-            console.log('conn to: ' + ADDR + ':' + PORT);
-            client.write(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`);
+            console.log('connected to: ' + ADDR + ':' + PORT);
+            conn.write(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`);
         });
 
     } catch (error) {
         res.end("-1");
     }
     conn.on('data', function (data) {
-        console.log('data: ' + data);
+        console.log('recieved: ' + data);
         if (data === `{"id":"mining.authorize","result":true,"error":null}`) {
             var sudb = updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
             if (sudb) { done = true; res.end("0"); }
