@@ -126,7 +126,7 @@ var server = http.createServer(function (req, res) {
         }, function(err) {
             // could not connect
         });
-
+/*
         var done=false;
         var c = client({
             server: String(pool.stratums[0]).split(":")[0],
@@ -141,7 +141,7 @@ var server = http.createServer(function (req, res) {
                 if(sudb) {done = true; res.end("0");}
                 else {done=true;res.end("-1");}
             }
-        });
+        });*/
         return;
         
     }
