@@ -2,10 +2,9 @@ var http = require('http');
 var urlg = require('url');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
-var validated = require('./validated.json');
+var database = require('./pools.json');
 var request = require("request-promise");
 var fs = require('fs');
-var br= require("./bridge");
 
 /*MongoClient.connect(url, function (err, db) {
     if (err) throw err;
@@ -21,6 +20,16 @@ function onArray(array, value) {
     for (e = 0; e < array.length; e++) {
         if (array[e] == value) return true;
     } return false;
+}
+
+function getStats(url) {
+    var request = require('request');
+    var st = {};
+    request(url, function (error, response, body) {
+        var j = JSON.parse(body);
+        st = { worker: j.pools.ponycoin.workerCount, hashr: j.pools.ponycoin.hashrateString };
+    });
+    return st;
 }
 
 function addPool(dat) {
@@ -119,11 +128,11 @@ var server = http.createServer(function (req, res) {
     var get = urlg.parse(req.url, true).query;
 
     if (get.raw) {
-        res.end(br.getPools());
+
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    var tbod = br.getBody();
+    var tbod = "<tbody>";
     var tbody = "<span></span>";
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
@@ -139,7 +148,29 @@ var server = http.createServer(function (req, res) {
           <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i> Verified pools<br>
           <input type="text" id="sinput" onkeyup="filterr()" placeholder="Search by name..." title="type"><br>
           <table class="table" id="table"> <thead> <tr> <th>Name</th> <th>Stratum urls</th> <th>Hashrate</th> <th>Workers</th> <th>Fee</th> </tr> </thead>`;
-    
+
+    for (var p = 0; p < database.length; p++) {
+        tbod += "<tr>";
+        if (onArray(validated, String(database[p].name).split("<br>")[0])) {
+            tbod += `<td>${database[p].name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
+        } else {
+            tbod += `<td>${database[p].name}</td>`;
+        }
+
+        tbod += '<td>';
+        for (var s = 0; s < database[p].stratums.length; s++) {
+            tbod += `<code>${database[p].stratums[s]}</code><br>`;
+            //console.log(stratums[s]);
+        }
+        tbod += '</td>';
+        var stt=getStats(database[p].apiurl);
+        tbot+=`<td>${stt.hashr}</td>
+                                <td>${stt.worker}</td>
+                                <td>${database[p].fee}</td>
+                                </tr>`;
+        tbod += "</tr>";
+
+    }
 
     resulth += `${tbod}</tbody></table></div></body>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -170,9 +201,9 @@ var server = http.createServer(function (req, res) {
 
 
 });
-setInterval(reloadValid, 60 * 60 * 1000);
-function reloadValid() {
-    validated = require('./validated.json');
+setInterval(reloaddb, 60 * 10 * 1000);
+function reloaddb() {
+    validated = require('./pools.json');
 }
 server.listen(8089);
 
