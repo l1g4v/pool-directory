@@ -69,6 +69,14 @@ var server = http.createServer(function (req, res) {
         var fileStream = fs.createReadStream("./favicon.png");
         return fileStream.pipe(res);
     }
+    if(req.url==="/uppool"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
+        res.write('<input type="file" name="filetoupload"><br>');
+        res.write('<input type="submit">');
+        res.write('</form>');
+        return res.end();
+    }
     /*if (req.method === 'POST') {
         if (req.url === "/inbound") {
             var requestBody = '';
@@ -171,7 +179,7 @@ var server = http.createServer(function (req, res) {
         tbod += "</tr>";
         scriptu += `
         $.ajax({
-            url: ${database[p].apiurl},
+            url: "${database[p].apiurl}",
             dataType: 'json',
             success: function (data) {
                 console.log(data);
