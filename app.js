@@ -254,7 +254,7 @@ data();
 function validPool(DATA, res) {
     var conn = new net.Socket();
     var PORT = parseInt(String(DATA.stratums[0]).split(":")[1]);
-    var ADDR = parseInt(String(DATA.stratums[0]).split(":")[0]);
+    var ADDR = String(DATA.stratums[0]).split(":")[0];
     console.log('conn to: ' + ADDR + ':' + PORT);
     try {
         conn.connect(PORT, ADDR, function () {
