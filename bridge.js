@@ -1,5 +1,4 @@
-import { get } from 'https';
-
+var request = require("request-promise");
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 var validated = require('./validated.json').pools;
