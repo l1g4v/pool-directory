@@ -227,7 +227,7 @@ function validPool(DATA, res) {
         var id = JSON.parse(data).id;
         var mt = JSON.parse(data).method;
         if (id === `mining.authorize`||mt === `mining.notify`) {
-            var sudb = updateDB({ name: pool.name, wbsite: pool.wbsite, stratums: pool.stratums, apiurl: pool.apiurl, fee: pool.apiurl });
+            var sudb = updateDB({ name: data.name, wbsite: data.wbsite, stratums: data.stratums, apiurl: data.apiurl, fee: data.fee });
             if (sudb) { done = true; res.end("0"); }
             else res.end("-1");
             conn.destroy();
