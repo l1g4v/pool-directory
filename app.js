@@ -5,7 +5,6 @@ var urlg = require('url');
 var database = require('./pools.json');
 var validated = require("./validated.json").pools;
 var net = require('net');
-var pool_domain = "pools.ponycoin.tk";
 var fs = require('fs');
 
 
