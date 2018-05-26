@@ -55,7 +55,11 @@ var server = http.createServer(function (req, res) {
         return;
     }
     else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
+        var origin = (request.headers.origin || "*");
+        res.writeHead(200, {
+            'Content-Type': 'text/html', 
+            "access-control-allow-origin": origin,
+        });
         var tbod = "<tbody>";
         var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
         var resulth = `<!DOCTYPE html>
