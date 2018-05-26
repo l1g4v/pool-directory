@@ -1,1 +1,1 @@
-[{ "name": "Equestrian Pool<br>https://eqpool.tk", "stratums": ["stratum.eqpool.tk:3032","stratum.eqpool.tk:3032"], "apiurl": "https://eqpool.tk/api/stats/", "fee": "0.8%" }]
+[{ "name": "Equestrian Pool","wbsite":"https://eqpool.tk", "stratums": ["stratum.eqpool.tk:3032","stratum.eqpool.tk:3032"], "apiurl": "https://eqpool.tk/api/stats/", "fee": "0.8%" }]

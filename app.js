@@ -1,10 +1,10 @@
 var http = require('http');
 var urlg = require('url');
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+//var MongoClient = require('mongodb').MongoClient;
+//var url = "mongodb://localhost:27017/";
 var database = require('./pools.json');
-var request = require("request-promise");
-var validated= require("./validated.json");
+//var request = require("request-promise");
+var validated = require("./validated.json");
 var fs = require('fs');
 
 /*MongoClient.connect(url, function (err, db) {
@@ -135,7 +135,7 @@ var server = http.createServer(function (req, res) {
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     var tbod = "<tbody>";
-    var tbody = "<span></span>";
+    var scriptu = `<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script>function data(){var apis=[`
     var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -153,28 +153,39 @@ var server = http.createServer(function (req, res) {
 
     for (var p = 0; p < database.length; p++) {
         tbod += "<tr>";
-        if (onArray(validated, String(database[p].name))) {
-            tbod += `<td>${database[p].name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
+        if (onArray(validated, database[p].name)) {
+            tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
         } else {
-            tbod += `<td>${database[p].name}</td>`;
+            tbod += `<td>${database[p].name}</td><br><a href="${database[p].wbsite}">${database[p].wbsite}</a>`;
         }
 
         tbod += '<td>';
         for (var s = 0; s < database[p].stratums.length; s++) {
-            tbod += `<code>${database[p].stratums[s]}</code><br>`;
+            tbod += `<code>stratum+tcp://${database[p].stratums[s]}</code><br>`;
             //console.log(stratums[s]);
         }
         tbod += '</td>';
-        var stt=getStats(database[p].apiurl);
-        tbod+=`<td>${stt.hashr}</td>
-                                <td>${stt.worker}</td>
+        //var stt=getStats(database[p].apiurl);
+        scriptu += `"${apiurl}",`;
+        tbod += `<td id="${p}_h">null</td>
+                                <td id="${p}_w">$null</td>
                                 <td>${database[p].fee}</td>
                                 </tr>`;
         tbod += "</tr>";
 
     }
+    scriptu += `"end"];
+    for(var x=0;x<apis.lenght-1;x++){
+        $.getJSON(apis[x], function(data) {
+        document.getElementById(x+"_h").innerHTML=data.pools.ponycoin.hashrateString;
+        document.getElementById(x+"_p").innerHTML=j.pools.ponycoin.workerCount;
+    });
+    }
+}
+    </script>`;
 
     resulth += `${tbod}</tbody></table></div></body>
+        ${scriptu}
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
