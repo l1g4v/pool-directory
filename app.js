@@ -29,7 +29,7 @@ function getStats(url) {
     request(url, function (error, response, body) {
         var j = JSON.parse(body);
         console.log(j);
-        st = { worker: j.pools.ponycoin.workerCount, hashr: j.pools.ponycoin.hashrateString };
+        return { worker: j.pools.ponycoin.workerCount, hashr: j.pools.ponycoin.hashrateString };
     });
     return st;
 }
