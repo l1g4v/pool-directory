@@ -95,8 +95,7 @@ var server = http.createServer(function (req, res) {
 
     if (get.uppool) {
         console.log(get.uppool);
-        var decoded=decodeURIComponent(get.uppool);
-        var pool = JSON.parse(decoded);
+        var pool = JSON.parse(get.uppool);
         if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
             res.end("1")
         }
