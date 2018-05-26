@@ -243,7 +243,7 @@ function validPool(DATA, res) {
 function updateDB(value) {
     var acdb=JSON.stringify(database);
     var sdb=acdb.substring(0,acdb.length-1);
-    var nwdb=acdb+","+JSON.stringify(value)+"]";
+    var nwdb=sdb+","+JSON.stringify(value)+"]";
     database=JSON.parse(nwdb);
     try {
         fs.writeFileSync("pools.json", JSON.stringify(database));
