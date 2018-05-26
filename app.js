@@ -1,61 +1,17 @@
 var http = require('http');
 var urlg = require('url');
-//var MongoClient = require('mongodb').MongoClient;
-//var url = "mongodb://localhost:27017/";
 var database = require('./pools.json');
-//var request = require("request-promise");
 var validated = require("./validated.json");
+var formidable = require('formidable');
 var fs = require('fs');
 
-/*MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("pooldb");
-    dbo.createCollection("pools", function (err, res) {
-        if (err) throw err;
-        console.log("Collection created!");
-        db.close();
-    });
-});*/
 
 function onArray(array, value) {
     for (e = 0; e < array.length; e++) {
         if (array[e] == value) return true;
     } return false;
 }
-/*
-function getStats(url) {
-    var request = require('request');
-    var st = {};
-    request(url, function (error, response, body) {
-        var j = JSON.parse(body);
-        console.log(j);
-        return { worker: j.pools.ponycoin.workerCount, hashr: j.pools.ponycoin.hashrateString };
-    });
-    return st;
-}
 
-function addPool(dat) {
-    var con = MongoClient.connect(url);
-    var database = null;
-    var res = false;
-    con.then((db) => {
-        database = db;
-        return db.collection('pools');
-    })
-        .then((pools) => {
-            return pools.insertOne(dat);
-        })
-        .then((result) => {
-            console.log(result);
-            database.close();
-            return true;
-        })
-        .catch((err) => {
-            console.error(err)
-            return false;
-        });
-    return res;
-}
 /**
  * Response codes
  * -1: error
@@ -69,14 +25,7 @@ var server = http.createServer(function (req, res) {
         var fileStream = fs.createReadStream("./favicon.png");
         return fileStream.pipe(res);
     }
-    if(req.url==="/uppool"){
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
-        res.write('<input type="file" name="filetoupload"><br>');
-        res.write('<input type="submit">');
-        res.write('</form>');
-        return res.end();
-    }
+    
     /*if (req.method === 'POST') {
         if (req.url === "/inbound") {
             var requestBody = '';
@@ -134,8 +83,24 @@ var server = http.createServer(function (req, res) {
         }
         return;
     }*/
-
     var get = urlg.parse(req.url, true).query;
+
+    if (req.url == '/fileupload') {
+        var form = new formidable.IncomingForm();
+        form.parse(req, function (err, fields, files) {
+          res.write('File uploaded');
+          res.end();
+        });
+      }
+
+    if(get.uppool){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
+        res.write('<input type="file" name="filetoupload"><br>');
+        res.write('<input type="submit">');
+        res.write('</form>');
+        return res.end();
+    }
 
     if (get.raw) {
         res.end(validated);
@@ -227,7 +192,7 @@ function reloaddb() {
     validated = require('./validated.json');
     database = require('./pools.json');
 }
-server.listen(8089);
+server.listen(8087);
 
 /*
 API stats format
