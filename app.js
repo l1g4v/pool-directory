@@ -22,7 +22,7 @@ function onArray(array, value) {
         if (array[e] == value) return true;
     } return false;
 }
-
+/*
 function getStats(url) {
     var request = require('request');
     var st = {};
@@ -130,7 +130,7 @@ var server = http.createServer(function (req, res) {
     var get = urlg.parse(req.url, true).query;
 
     if (get.raw) {
-
+        res.end(validated);
     }
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
