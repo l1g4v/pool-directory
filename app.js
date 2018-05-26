@@ -146,6 +146,7 @@ var server = http.createServer(function (req, res) {
 
         tbod += '<td>';
         for (var s = 0; s < database[p].stratums.length; s++) {
+            if(database[p].stratums[s]!=="")
             tbod += `<code>stratum+tcp://${database[p].stratums[s]}</code><br>`;
         }
         tbod += '</td>';
@@ -216,7 +217,7 @@ function validPool(DATA, res) {
         conn.connect(PORT, ADDR, function () {
             console.log('connected to: ' + ADDR + ':' + PORT);
             conn.write(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`);
-            console.log(`Send {"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`);
+            console.log(`Send validation msg`);
         });
 
     } catch (error) {
@@ -240,7 +241,10 @@ function validPool(DATA, res) {
 };
 
 function updateDB(value) {
-    database.push(value);
+    var acdb=JSON.stringify(database);
+    var sdb=acdb.substring(0,acdb.length-1);
+    var nwdb=acdb+","+JSON.stringify(value)+"]";
+    database=JSON.parse(nwdb);
     try {
         fs.writeFileSync("pools.json", JSON.stringify(database));
     } catch (e) {

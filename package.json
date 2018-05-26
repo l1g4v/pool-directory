@@ -11,7 +11,8 @@
     "url": ""
   },
   "dependencies": {
-    "request": "^2.87.0"
+    "request": "^2.87.0",
+    "net":"^1.0.2"
   },
   "license": "MIT"
 }
