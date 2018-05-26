@@ -1,3 +1,3 @@
-## pool-directory
+## Pool directory
 
-Simple 'pool directory' writen in javascript
+Simple "pool directory" writen in javascript

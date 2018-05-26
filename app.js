@@ -96,19 +96,16 @@ var server = http.createServer(function (req, res) {
         tbod += "</tr>";
 
     }
-    var tmp = "`${apis[x]}`";
     scriptu += `
     "end"];
     for (var x = 0; x < apis.length - 1; x++) {
-        if(x>(apis.length-1)){
-            return;
-        }
+        var api=apis[x];
         $.ajax({
-            url: ${tmp},
+            url: api,
             dataType: 'json',
+            async: false,
             success: function (data) {
                 console.log(data);
-                console.log()
                 document.getElementById(String(x)+"_h").innerHTML = data.algos.lyra2re2.hashrateString;
                 document.getElementById(String(x)+"_w").innerHTML = data.algos.lyra2re2.workers;
             }
@@ -188,9 +185,3 @@ function reloaddb() {
     database = require('./pools.json');
 }
 server.listen(8089);
-
-/*
-API stats format
-
- {"time":1527202840,"global":{"workers":0,"hashrate":0},"algos":{"lyra2re2":{"workers":0,"hashrate":0,"hashrateString":"0.00 KH"}},"pools":{"ponycoin":{"name":"ponycoin","symbol":"PONY","algorithm":"lyra2re2","poolStats":{"validShares":0,"validBlocks":0,"invalidShares":0,"totalPaid":0},"blocks":{"pending":0,"confirmed":0,"orphaned":0},"workers":{},"hashrate":0,"workerCount":0,"hashrateString":"0.00 KH"}}}
-*/
