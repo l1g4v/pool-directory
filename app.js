@@ -165,7 +165,7 @@ var server = http.createServer(function (req, res) {
         }
         tbod += '</td>';
         var stt=getStats(database[p].apiurl);
-        tbot+=`<td>${stt.hashr}</td>
+        tbod+=`<td>${stt.hashr}</td>
                                 <td>${stt.worker}</td>
                                 <td>${database[p].fee}</td>
                                 </tr>`;
