@@ -2,7 +2,7 @@ var http = require('http');
 var urlg = require('url');
 var database = require('./pools.json');
 var validated = require("./validated.json").pools;
-
+var net = require('net');
 var pool_domain = "pools.ponycoin.tk";
 //var formidable = require('formidable');
 //var client = require("stratum-client");
