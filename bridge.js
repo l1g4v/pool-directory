@@ -37,11 +37,11 @@ function getraw() {
     return raw;
 }
 
-function procdt(result, j) {
+function procdt(result, j,n) {
     
-    var name = result.name;
-    var stratums = result.stratums;
-    var fee = result.fee;
+    var name = result[n].name;
+    var stratums = result[n].stratums;
+    var fee = result[n].fee;
     addtovar('<tr>');
     if (onArray(validated, String(name).split("<br>")[0])) {
         addtovar(`<td>${name} <i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`);
@@ -78,13 +78,9 @@ module.exports = {
                             url: result[n].apiurl,
                             json: true
                         },function (error, resp, body) { 
-                            procdt(result[n],body);
+                            procdt(result,body,n);
                         });
                     }
-
-                    //console.log(tbody);
-
-
                 }
             });
         }).catch(function (err) { console.log(err) });
