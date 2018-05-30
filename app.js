@@ -14,11 +14,18 @@ function onArray(array, value) {
     } return false;
 }
 
+function onvalidPool(value) {
+    for (e = 0; e < database.length; e++) {
+        if (database[e].wbsite == value) return true;
+    } return false;
+}
+
 function onPool(value) {
     for (e = 0; e < database.length; e++) {
         if (database[e].wbsite == value.n || database[e].wbsite == value.w) return true;
     } return false;
 }
+
 
 /**
  * Response codes
@@ -26,6 +33,7 @@ function onPool(value) {
  * 0: done
  * 1: required data
  * 2: pool conn fail
+ * 3: pool already exist
  */
 var server = http.createServer(function (req, res) {
     if (req.method === 'GET' && req.url === '/favicon.ico') {
@@ -39,11 +47,11 @@ var server = http.createServer(function (req, res) {
     if (get.uppool) {
         //console.log(get.uppool);
         var pool = JSON.parse(get.uppool);
-        if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee)) {
+        if (!(pool.name && pool.wbsite && pool.stratums && pool.apiurl && pool.fee && pool.cmds && typeof (pool.cmds) !== Array && typeof (pool.stratums) !== Array)) {
             res.end("1");
         }
         if (onPool({ n: pool.name, w: pool.wbsite })) {
-            return res.end("-1");
+            return res.end("3");
         }
         validPool(pool, res);
         return;
@@ -53,7 +61,7 @@ var server = http.createServer(function (req, res) {
     else if (get.raw) {
         var origin = (req.headers.origin || "*");
         res.writeHead(200, {
-            'Content-Type': 'text/plain', 
+            'Content-Type': 'text/plain',
             "access-control-allow-origin": origin,
         });
         res.end(JSON.stringify(database));
@@ -63,8 +71,11 @@ var server = http.createServer(function (req, res) {
         res.writeHead(200, {
             'Content-Type': 'text/html'
         });
+        var cmds = `var cmds=[`;
         var tbod = "<tbody>";
-        var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>function data(){var apis=[`
+        var scriptu = `<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script><script>
+
+        function data(){var apis=[`
         var resulth = `<!DOCTYPE html>
         <html lang="en">        
         <head>
@@ -83,7 +94,8 @@ var server = http.createServer(function (req, res) {
         for (var p = 0; p < database.length; p++) {
             tbod += "<tr>";
             scriptu += `"${database[p].apiurl}",`;
-            if (onArray(validated, database[p].wbsite)) {
+            cmds += `["${database.cmds[0]}","${database.cmds[1]}"],`
+            if (onvalidPool(database[p].wbsite)) {
                 tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
             } else {
                 tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a></td>`;
@@ -102,8 +114,11 @@ var server = http.createServer(function (req, res) {
             tbod += "</tr>";
 
         }
+        var tmp1 = "hash2String(eval(`data.${cmds[x][0]}`))[0];";
+        var tmp2 = "eval(`data.${cmds[x][1]}`);";
+        cmds += '["null"]];';
         scriptu += `
-    "end"];
+    "end"];${cmds}
     for (var x = 0; x < apis.length - 1; x++) {
         var api=apis[x];
         $.ajax({
@@ -112,8 +127,8 @@ var server = http.createServer(function (req, res) {
             async: false,
             success: function (data) {
                 console.log(data);
-                document.getElementById(String(x)+"_h").innerHTML = data.algos.lyra2re2.hashrateString;
-                document.getElementById(String(x)+"_w").innerHTML = data.algos.lyra2re2.workers;
+                document.getElementById(String(x)+"_h").innerHTML = ${tmp1};
+                document.getElementById(String(x)+"_w").innerHTML = ${tmp2};
             }
         });
     }   
@@ -150,26 +165,29 @@ function validPool(DATA, res) {
             console.log('connected to: ' + ADDR + ':' + PORT);
             conn.write(`{"id":"mining.authorize","method":"mining.authorize","params":["991CE29F7D7975ED789D41F7CAC03646F182BB0F","x"]}`);
             console.log(`Send validation msg`);
+
+        });
+        
+        conn.on('data', function (d) {
+            console.log('recieved: ' + d);
+            var id = JSON.parse(d).id;
+            var mt = JSON.parse(d).method;
+            if (id === `mining.authorize` || mt === `mining.notify`) {
+                var sudb = updateDB({ name: DATA.name, wbsite: DATA.wbsite, stratums: DATA.stratums, apiurl: DATA.apiurl, fee: DATA.fee });
+                if (sudb) { done = true; res.end("0"); }
+                else res.end("-1");
+                conn.destroy();
+            }
+        });
+
+        conn.on('close', function () {
+            console.log("done");
         });
 
     } catch (error) {
         res.end("-1");
     }
-    conn.on('data', function (d) {
-        console.log('recieved: ' + d);
-        var id = JSON.parse(d).id;
-        var mt = JSON.parse(d).method;
-        if (id === `mining.authorize` || mt === `mining.notify`) {
-            var sudb = updateDB({ name: DATA.name, wbsite: DATA.wbsite, stratums: DATA.stratums, apiurl: DATA.apiurl, fee: DATA.fee });
-            if (sudb) { done = true; res.end("0"); }
-            else res.end("-1");
-            conn.destroy();
-        }
-    });
 
-    conn.on('close', function () {
-        console.log("done");
-    });
 };
 
 function updateDB(value) {

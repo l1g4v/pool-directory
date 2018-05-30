@@ -3,15 +3,13 @@
 To upload a pool, first you need a json with this format:
 
 ```json
-{ "name": "Name","wbsite":"https://web.site", "stratums": ["stratum:312","urls:212"], "apiurl": "https://web.site/rute/to/stats/", "fee": "1.0%" }
+{ "name": "Name","wbsite":"https://web.site", "stratums": ["stratum:312","urls:212"], "apiurl": "https://web.site/rute/to/stats/", "fee": "1.0%" , "cmds":["algos.somealgo.hashrate","algos.somealgo.workers"] }
 ```
-the api stats on you site need to have this format
 
-```json
-{"time":1527202840,"global":{"workers":0,"hashrate":0},"algos":{"somealgo":{"workers":0,"hashrate":0,"hashrateString":"0.00 KH"}},"pools":{"somecoin":{"name":"somecoin","symbol":"SOME","algorithm":"somealgo","poolStats":{"validShares":0,"validBlocks":0,"invalidShares":0,"totalPaid":0},"blocks":{"pending":0,"confirmed":0,"orphaned":0},"workers":{},"hashrate":0,"workerCount":0,"hashrateString":"0.00 KH"}}}
-```
+Edit ```"cmds":["algos.somealgo.hashrate","algos.somealgo.workers"]``` replacing with the variable that contains the pool hashrate and worker count from the json result in ```https://web.site/rute/to/stats/```
+
 ## IMPORTANT
- - the api request must be have ```"Access-Control-Allow-Origin":"<pools_domain or '*'>}"``` header
+ - the api request must be have ```"Access-Control-Allow-Origin":"<[domain] or '*'>}"``` header
 
 Url encode you json
 ```
@@ -32,55 +30,8 @@ The posible response codes are:
  * 0: done
  * 1: required data
  * 2: pool connection fail
+ * 3: pool already exist
  */
-```
-
-## Algorithm
-
-Replace lyra2re2 in ```app.js``` (lines 108 and 109) with you coin algorithm (e.j somealgo)
-
-```javascript
-scriptu += `
-    "end"];
-    for (var x = 0; x < apis.length - 1; x++) {
-        var api=apis[x];
-        $.ajax({
-            url: api,
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-                console.log(data);
-                document.getElementById(String(x)+"_h").innerHTML = data.algos.lyra2re2.hashrateString;
-                document.getElementById(String(x)+"_w").innerHTML = data.algos.lyra2re2.workers;
-            }
-        });
-    }   
-}
-data();
-</script>`;
-
-```
-
-```javascript
-scriptu += `
-    "end"];
-    for (var x = 0; x < apis.length - 1; x++) {
-        var api=apis[x];
-        $.ajax({
-            url: api,
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-                console.log(data);
-                document.getElementById(String(x)+"_h").innerHTML = data.algos.somealgo.hashrateString;
-                document.getElementById(String(x)+"_w").innerHTML = data.algos.somealgo.workers;
-            }
-        });
-    }   
-}
-data();
-</script>`;
-
 ```
 
 ## "Validate" pool

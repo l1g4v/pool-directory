@@ -1,6 +1,6 @@
 {
   "name": "pool-directory",
-  "version": "0.19.5",
+  "version": "0.19.9",
   "description": "Simple mining pool directory",
   "private": true,
   "scripts": {
