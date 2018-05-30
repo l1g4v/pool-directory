@@ -94,7 +94,7 @@ var server = http.createServer(function (req, res) {
         for (var p = 0; p < database.length; p++) {
             tbod += "<tr>";
             scriptu += `"${database[p].apiurl}",`;
-            cmds += `["${database.cmds[0]}","${database.cmds[1]}"],`
+            cmds += `["${database[p].cmds[0]}","${database[p].cmds[1]}"],`
             if (onvalidPool(database[p].wbsite)) {
                 tbod += `<td>${database[p].name}<br><a href="${database[p].wbsite}">${database[p].wbsite}</a><i class="fas fa-check-circle" style="color: rgb(6, 219, 34)"></i></td>`;
             } else {
@@ -167,7 +167,7 @@ function validPool(DATA, res) {
             console.log(`Send validation msg`);
 
         });
-        
+
         conn.on('data', function (d) {
             console.log('recieved: ' + d);
             var id = JSON.parse(d).id;
