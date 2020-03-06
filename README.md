@@ -1,3 +1,3 @@
 ## Pool directory
 
-Simple "pool directory" writen in javascript
+Simple "pool directory" written in javascript
